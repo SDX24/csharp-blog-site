@@ -1,2 +1,2 @@
-# csharp-blog-site
-Blogging site using ASP .NET Core Razor Pages
+# bookstore
+An ASP.NET Core Blazor Bookstore app
