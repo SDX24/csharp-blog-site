@@ -73,18 +73,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID || secrets.AZUREAPPSERVICE_TENANTID_95F7F11C50A84A8EBDACF84725C4DAC3 || secrets.AZUREAPPSERVICE_TENANTID_B86333A1D8874A59A92A95EE5F9BE7E6 }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID || secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3EE68DC74EEC48E8B9124DFCE3F5207E || secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_34D5DDBC8EC74EFBA3372D9B2433A30F }}
 
-      - name: Validate target Web App exists
-        env:
-          WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME || secrets.AZURE_WEBAPP_NAME || 'blog-site' }}
-        run: |
-          echo "Deploy target app: ${WEBAPP_NAME}"
-          if ! az webapp show --name "${WEBAPP_NAME}" --query "name" -o tsv >/dev/null 2>&1; then
-            echo "::error::Azure Web App '${WEBAPP_NAME}' was not found in the authenticated subscription."
-            echo "::notice::Available Web Apps in this subscription:"
-            az webapp list --query "[].name" -o tsv || true
-            exit 1
-          fi
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
