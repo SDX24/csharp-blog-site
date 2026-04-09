@@ -23,6 +23,10 @@
     <p>Total: $@Order.GetTotal()</p>
     <button class="btn btn-warning" @onclick="PlaceOrder">Place your order</button>
 }
+else
+{
+    <p>Your cart is empty.</p>
+}
 
 @code {
     private BookstoreDb context { get; set; }
@@ -37,9 +41,10 @@
     {
         Order.OrderDate = DateTime.Now;
 
-        context.Orders.Attach(Order);
+        context.Orders.Add(Order);
         await context.SaveChangesAsync();
 
+        OrderState.ResetOrder();
         NavigationManager.NavigateTo("/");
     }
 

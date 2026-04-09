@@ -1,0 +1,55 @@
+@page "/myorders"
+@implements IAsyncDisposable
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<BookstoreDb> DbFactory
+@rendermode InteractiveServer
+
+<PageTitle>Bookstore - My Orders</PageTitle>
+
+<h1>My Orders</h1>
+
+@if (orders is null)
+{
+    <p>Loading...</p>
+}
+else if (!orders.Any())
+{
+    <p>No orders have been placed yet.</p>
+}
+else
+{
+    @foreach (var order in orders)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Order #@order.Id</h5>
+                <p class="mb-2"><strong>Date:</strong> @order.OrderDate.ToString("yyyy-MM-dd HH:mm")</p>
+                <ul class="mb-2">
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <li>@item.Book.Title (x@item.Quantity)</li>
+                    }
+                </ul>
+                <p class="mb-0"><strong>Total:</strong> $@order.GetTotal()</p>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private BookstoreDb context = default!;
+    private List<Order>? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+        orders = await context.Orders
+            .AsNoTracking()
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Book)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
