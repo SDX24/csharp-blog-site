@@ -31,6 +31,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var dbFactory = services.GetRequiredService<IDbContextFactory<BookstoreDb>>();
+    using (var dbContext = dbFactory.CreateDbContext())
+    {
+        dbContext.Database.Migrate();
+    }
 
     SeedData.Initialize(services);
 }
