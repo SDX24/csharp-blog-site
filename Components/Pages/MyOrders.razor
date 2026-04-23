@@ -38,7 +38,7 @@ else
 
                 <div class="d-flex justify-content-between align-items-center fw-bold fs-3">
                     <span>Total:</span>
-                    <span>@order.GetTotal().ToString("C")</span>
+                    <span>@GetTotalPrice(order)</span>
                 </div>
             </div>
         </div>
@@ -72,9 +72,11 @@ else
     {
         if (item.Book is null)
         {
-            return 0m.ToString("C");
+            return "$0.00";
         }
 
-        return item.GetTotal().ToString("C");
+        return $"${item.GetTotal():0.00}";
     }
+
+    private static string GetTotalPrice(Order order) => $"${order.GetTotal():0.00}";
 }
