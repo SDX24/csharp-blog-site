@@ -15,19 +15,11 @@
 }
 else
 {
-    <div class="card">
-        <div class="card-body p-0">
-            @foreach (var book in books)
-            {
-                <div class="d-flex justify-content-between align-items-center px-3 py-3 border-bottom">
-                    <div>
-                        <a href="@GetBookDetailsLink(book.Id)" class="fs-4 text-decoration-none">@book.Title</a>
-                        <div class="text-body-secondary">@book.Author</div>
-                    </div>
-                    <div class="fw-bold fs-5">@GetPrice(book.Price)</div>
-                </div>
-            }
-        </div>
+    <div class="hstack flex-wrap gap-3">
+        @foreach (var book in books)
+        {
+            <BookCard Book="@book" />
+        }
     </div>
 }
 
@@ -68,8 +60,4 @@ else
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
-
-    private static string GetBookDetailsLink(int bookId) => $"/books/details?id={bookId}";
-
-    private static string GetPrice(decimal price) => $"${price:0.00}";
 }
