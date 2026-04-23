@@ -6,12 +6,7 @@ public class OrderState
 {
     public Order Order { get; set; } = new();
 
-    public event Action OnChange;
-
-    public OrderState()
-    {
-        Order.OrderItems = new List<OrderItem>();
-    }
+    public event Action? OnChange;
 
     public void AddItem(OrderItem item) // Add book to cart
     {

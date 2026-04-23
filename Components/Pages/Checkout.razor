@@ -1,7 +1,7 @@
 @page "/checkout"
 
 @using Microsoft.EntityFrameworkCore
-@implements IAsyncDisposable
+@implements IDisposable
 @inject OrderState OrderState
 @inject NavigationManager NavigationManager
 @inject IDbContextFactory<BookstoreDb> DbFactory
@@ -29,7 +29,7 @@ else
 }
 
 @code {
-    private BookstoreDb context { get; set; }
+    private BookstoreDb context = default!;
     private Order Order => OrderState.Order;
 
     protected override void OnInitialized()
@@ -41,6 +41,29 @@ else
     {
         Order.OrderDate = DateTime.Now;
 
+        if (!Order.OrderItems.Any())
+        {
+            return;
+        }
+
+        foreach (var item in Order.OrderItems)
+        {
+            if (item.Book is null)
+            {
+                throw new InvalidOperationException("Cannot place an order item without a book.");
+            }
+
+            var trackedBook = context.Books.Local.FirstOrDefault(book => book.Id == item.Book.Id);
+            if (trackedBook is null)
+            {
+                context.Attach(item.Book);
+            }
+            else
+            {
+                item.Book = trackedBook;
+            }
+        }
+
         context.Orders.Add(Order);
         await context.SaveChangesAsync();
 
@@ -48,5 +71,5 @@ else
         NavigationManager.NavigateTo("/");
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public void Dispose() => context.Dispose();
 }
