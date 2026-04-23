@@ -31,7 +31,16 @@
                         <dt class="col-sm-4">Author</dt>
                         <dd class="col-sm-8">@book.Author</dd>
                         <dt class="col-sm-4">Genre</dt>
-                        <dd class="col-sm-8">@book.Genre</dd>
+                        <dd class="col-sm-8">
+                            @if (string.IsNullOrWhiteSpace(book.Genre))
+                            {
+                                <span>-</span>
+                            }
+                            else
+                            {
+                                <a href="@GetGenreLink(book.Genre)">@book.Genre</a>
+                            }
+                        </dd>
                         <dt class="col-sm-4">Publisher</dt>
                         <dd class="col-sm-8">@book.Publisher</dd>
                         <dt class="col-sm-4">PublicationYear</dt>
@@ -79,4 +88,6 @@
     {
         OrderState.AddItem(new OrderItem { Book = book, Quantity = 1 });
     }
+
+    private static string GetGenreLink(string genre) => $"/genre/{System.Uri.EscapeDataString(genre)}";
 }
