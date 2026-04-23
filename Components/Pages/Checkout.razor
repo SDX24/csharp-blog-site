@@ -68,7 +68,7 @@ else
         await context.SaveChangesAsync();
 
         OrderState.ResetOrder();
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/myorders");
     }
 
     public void Dispose() => context.Dispose();
