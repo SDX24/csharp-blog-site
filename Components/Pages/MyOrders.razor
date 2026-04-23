@@ -21,16 +21,25 @@ else
     @foreach (var order in orders)
     {
         <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fs-4">Order #@order.Id</span>
+                <span class="fs-4">@order.OrderDate.ToString("MMMM dd, yyyy")</span>
+            </div>
             <div class="card-body">
-                <h5 class="card-title">Order #@order.Id</h5>
-                <p class="mb-2"><strong>Date:</strong> @order.OrderDate.ToString("yyyy-MM-dd HH:mm")</p>
-                <ul class="mb-2">
-                    @foreach (var item in order.OrderItems)
-                    {
-                        <li>@item.Book.Title (x@item.Quantity)</li>
-                    }
-                </ul>
-                <p class="mb-0"><strong>Total:</strong> $@order.GetTotal()</p>
+                @foreach (var item in order.OrderItems)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2 fs-4">
+                        <span>@GetItemLabel(item)</span>
+                        <span>@GetItemPrice(item)</span>
+                    </div>
+                }
+
+                <hr />
+
+                <div class="d-flex justify-content-between align-items-center fw-bold fs-3">
+                    <span>Total:</span>
+                    <span>@order.GetTotal().ToString("C")</span>
+                </div>
             </div>
         </div>
     }
@@ -52,4 +61,20 @@ else
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
+    private static string GetItemLabel(OrderItem item)
+    {
+        var bookTitle = item.Book?.Title ?? "Unknown book";
+        return $"{bookTitle} (x {item.Quantity})";
+    }
+
+    private static string GetItemPrice(OrderItem item)
+    {
+        if (item.Book is null)
+        {
+            return 0m.ToString("C");
+        }
+
+        return item.GetTotal().ToString("C");
+    }
 }
